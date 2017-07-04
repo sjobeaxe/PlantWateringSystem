@@ -21,7 +21,7 @@ void main(void) {
     struct plant 
     {
         int plant_id;
-        int 
+       // int 
     };
     
     return;
