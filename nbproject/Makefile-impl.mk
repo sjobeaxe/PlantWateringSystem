@@ -24,7 +24,7 @@ CLEAN_SUBPROJECTS=${CLEAN_SUBPROJECTS_${SUBPROJECTS}}
 
 
 # Project Name
-PROJECTNAME=PlantWaterer.X
+PROJECTNAME=PlantWateringSystem
 
 # Active Configuration
 DEFAULTCONF=default
