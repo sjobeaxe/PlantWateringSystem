@@ -9,7 +9,7 @@
 #include <xc.h>
 
 void main(void) {
-    int x[64];
+    int x[32];
     
     x[0] = 1;
     
