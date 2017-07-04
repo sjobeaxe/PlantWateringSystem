@@ -3,7 +3,7 @@
     <type>com.microchip.mplab.nbide.embedded.makeproject</type>
     <configuration>
         <data xmlns="http://www.netbeans.org/ns/make-project/1">
-            <name>PlantWaterer</name>
+            <name>PlantWateringSystem</name>
             <creation-uuid>df7fba89-d093-4301-81b4-a884113f4e03</creation-uuid>
             <make-project-type>0</make-project-type>
             <c-extensions>c</c-extensions>
