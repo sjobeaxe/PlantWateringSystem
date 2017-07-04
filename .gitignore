@@ -1,6 +1,7 @@
 #Folders
 build/
 dist/
+dist/private/
 
 #Files
 *.mk
