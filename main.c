@@ -7,7 +7,8 @@
 
 
 #include "main.h"
-#include "hardwareDefinitions.h"
+#include "ConfigurationBits.h"
+#include "HardwareDefinitions.h"
 
 void main(void)
 {
@@ -20,9 +21,9 @@ void main(void)
     while(1)
     {
        BlockingDelay(500); 
-       LED = 1;
+       LED_PIN = 1;
        BlockingDelay(500);
-       LED = 0;
+       LED_PIN = 0;
     }
     
     return;
@@ -50,7 +51,7 @@ void BlockingDelay(uint16_t delay)
  */
 void HardwareInitialize(void)
 {
-    // Clear HW latches
+    // Clear port latches
     LATA = 0x00;
     LATB = 0x00;
     LATC = 0x00;
