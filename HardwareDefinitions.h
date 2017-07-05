@@ -60,9 +60,11 @@
  */
 #define CHARGER_PIN LATCbits.LC5
 
-
-// UART speed settings (TODO: implement UART routines)
-#define USB_UART_BAUD 57600
-#define USB_BRG16BHS (((OSC_FREQ) / (4UL * (SHW_UART_BAUD))) -1)
+/**
+ * \def USB_UART_BAUD
+ * \brief Defines the baudrate of serial port connected to USB.
+ */
+#define USB_UART_BAUD 57600UL
+#define UART1_BRG16BHS (( (HW_CLOCK_FREQ) / (4UL * USB_UART_BAUD) ) -1)
 
 #endif	/* HARDWARE_DEFINITIONS_H */
