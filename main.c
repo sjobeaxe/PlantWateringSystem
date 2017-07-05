@@ -9,9 +9,11 @@
 #include "main.h"
 #include "ConfigurationBits.h"
 #include "HardwareDefinitions.h"
+#include <stdio.h>
 
 void main(void)
 {
+    uint8_t counter = 0;
     HardwareInitialize();
     
     /**
@@ -22,10 +24,30 @@ void main(void)
     {
        BlockingDelay(500); 
        LED_PIN = 1;
+       LCD_BACKLIGHT_PIN = 0;
        BlockingDelay(500);
        LED_PIN = 0;
+       LCD_BACKLIGHT_PIN = 1;
+       printf("TickTock: %i\n\r", counter++);
     }
     
+    return;
+}
+
+/**
+ * \fn void putch(char data)
+ * \brief Transmits one char on the USB UART.
+ * \param data character to send
+ *  
+ * Function which defines where printf prints data. 
+ * 
+ * TODO: Make this selectable between UART1 and UART2
+ */
+void putch(char data)
+{
+    // Block while previous transmitting
+    while (!PIR1bits.TX1IF);
+    TXREG1 = data;
     return;
 }
 
@@ -93,6 +115,14 @@ void HardwareInitialize(void)
      * Configure UART1.
      * Connected to USB-Serial converter on RC7 and RC6.
      */
-    // TODO
+    BAUDCON1 = 0b00001000; // Not inverted, BRG16
+    SPBRGH1 = (UART1_BRG16BHS >> 8) & 0xFF;
+    SPBRG1  = UART1_BRG16BHS & 0xFF;
+    TXSTA1 = 0b00100100;   // 8-bit tx, TX enabled, Async, High speed
+    RCSTA1 = 0b10010000;   // Enable serial port, 8-bit rx
+    //PIE1bits.RC1IE = 1;  // Enable receive interrupt.
+    //PIE1bits.TX1IE = 1;  // Enable transmit interrupt.
+    
+    
     return;
 }
