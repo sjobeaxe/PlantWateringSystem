@@ -19,10 +19,10 @@ void main(void)
      */
     while(1)
     {
-       LED = 1;
        BlockingDelay(500); 
-       LED = 0;
+       LED = 1;
        BlockingDelay(500);
+       LED = 0;
     }
     
     return;
@@ -80,8 +80,9 @@ void HardwareInitialize(void)
      * Configure oscillator.
      * Tune speed and power consumption here.
      */
-    OSCCON = 0b01110000;    // 16 MHz, use primary clock
-    //OSCCON  = 0b01100000; // 8 MHz, use primary clock
+    OSCCON = 0b01110000;    // 16 MHz, consumes ~4.2mA in RUN
+    //OSCCON = 0b01100000;    // 8 MHz, consumes ~2.8mA in RUN
+    //OSCCON = 0b00110000;    // 1 MHz, consumes ~1.3mA in RUN
     OSCCON2 = 0b00000000;   // Shut down MFINTOSC, SOSC off (unless requested), main osc drive off
     OSCTUNEbits.PLLEN = 0;  // Disable 4*PLL
     OSCCONbits.IDLEN = 1;   // Go to Idle on sleep
