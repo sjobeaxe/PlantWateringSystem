@@ -22,9 +22,8 @@
 #define FW_VERSION 1
 
 
-void HardwareInitialize(void);
-
-
+void putch(char data);
 void BlockingDelay(uint16_t delay);
+void HardwareInitialize(void);
 
 #endif	/* MAIN_H */
