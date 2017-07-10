@@ -25,7 +25,7 @@
 #pragma config BORV = 285       // Brown Out Reset Voltage bits (VBOR set to 2.85 V nominal)
 
 // CONFIG2H
-#pragma config WDTEN = ON       // Watchdog Timer Enable bits (WDT is always enabled. SWDTEN bit has no effect)
+#pragma config WDTEN = OFF      // Watchdog Timer Enable bits (WDT is always enabled. SWDTEN bit has no effect)
 #pragma config WDTPS = 128      // Watchdog Timer Postscale Select bits (1:128)
 
 // CONFIG3H
