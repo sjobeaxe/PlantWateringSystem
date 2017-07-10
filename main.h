@@ -16,10 +16,33 @@
 #include <stddef.h>
 
 /**
- * \def FW_VERSION
- * \brief Firmware version, using only one number
+ * Loosely adhering to semantic versioning http://semver.org/.
  */
-#define FW_VERSION 1
+
+/**
+ * \def FW_VERSION_MAJOR
+ * \brief Major firmware version.
+ * 
+ * Changes here reflect major changes and does not guarantee backwards 
+ * compatibility
+ */
+#define FW_VERSION_MAJOR 0
+
+/**
+ * \def FW_VERSION_MINOR
+ * \brief Minor firmware version.
+ * 
+ * Newer versions bring bug fixes and new features but are backwards compatible.
+ */
+#define FW_VERSION_MINOR 1
+
+/**
+ * \def FW_VERSION_PATCH
+ * \brief Patch firmware version.
+ * 
+ * Backwards compatible bug fixes.
+ */
+#define FW_VERSION_PATCH 0
 
 
 void putch(char data);

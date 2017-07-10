@@ -52,7 +52,7 @@ void putch(char data)
 }
 
 /**
- * \fn void BlockingDelay(void)
+ * \fn void BlockingDelay(uint16_t delay)
  * \brief A blocking delay.
  * \param delay time to delay in milli-seconds
  *  
