@@ -123,6 +123,33 @@ void HardwareInitialize(void)
     //PIE1bits.RC1IE = 1;  // Enable receive interrupt.
     //PIE1bits.TX1IE = 1;  // Enable transmit interrupt.
     
+    /**
+     * Configure Timer 1.
+     * Used for RTC functionality. A clock crystal is connected to the
+     * secondary oscillator.
+     */
+    T1CON = 0b10001000; // Use secondary oscillator, no scaling, 8 bit.
+    T1GCON = 0x00;      // No gate control.
+    TMR1H = 0x80;       // Write MSB to cause a roll-over in 1 second (32768 Hz).
+    TMR1L = 0x00;
+    PIE1bits.TMR1IE = 1; // Enable TMR1 interrupt.
+    T1CONbits.TMR1ON = 1; // Start timer
+    
+    /**
+     * Configure Timer 6.
+     * Used for tick-timer functionality. 
+     */
+    PR6 = 249;           // Timer period is 250
+    TMR6 = 0;            // Reset timer
+    PIE5bits.TMR6IE = 1; // Enable timer 6 interrupts.
+    T6CON = 0b01110111;  // Post scale: 15, pre scale: 16, timer on
+    
+    
+    /**
+     * Enable interrupts.
+     */
+    INTCONbits.PEIE = 1; 
+    INTCONbits.GIE = 1; 
     
     return;
 }
