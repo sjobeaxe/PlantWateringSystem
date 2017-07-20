@@ -1,7 +1,8 @@
 #Folders
-build/
-dist/
-nbproject/private/
+sources/build/
+sources/debug/
+sources/dist/
+sources/nbproject/private/
 
 #Files
 *.mk
