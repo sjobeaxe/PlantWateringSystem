@@ -9,12 +9,14 @@
 #include "main.h"
 #include "ConfigurationBits.h"
 #include "HardwareDefinitions.h"
+#include "tickTimer.h"
 #include <stdio.h>
 
 void main(void)
 {
     uint8_t counter = 0;
     HardwareInitialize();
+	tickTimerInit();
     
     /**
      * Start of the infinite super-loop.
@@ -22,15 +24,20 @@ void main(void)
      */
     while(1)
     {
-       BlockingDelay(500); 
-       LED_PIN = 1;
-       LCD_BACKLIGHT_PIN = 0;
-       BlockingDelay(500);
-       LED_PIN = 0;
-       LCD_BACKLIGHT_PIN = 1;
-       printf("TickTock: %i\n\r", counter++);
+	  if (0 == tickTimerGet(T_PERIODIC_1S))
+      {
+        tickTimerSet(T_PERIODIC_1S, tickMs(1000));
+      
+        LED_PIN = !LED_PIN;
+        LCD_BACKLIGHT_PIN = !LCD_BACKLIGHT_PIN;
+        
+        printf("TickTock: %i\n\r", counter++);
+	   
+	  }
+	  
+	 
     }
-    
+	
     return;
 }
 
@@ -132,17 +139,17 @@ void HardwareInitialize(void)
     T1GCON = 0x00;      // No gate control.
     TMR1H = 0x80;       // Write MSB to cause a roll-over in 1 second (32768 Hz).
     TMR1L = 0x00;
-    PIE1bits.TMR1IE = 1; // Enable TMR1 interrupt.
+    //PIE1bits.TMR1IE = 1; // Enable TMR1 interrupt.
     T1CONbits.TMR1ON = 1; // Start timer
     
     /**
      * Configure Timer 6.
      * Used for tick-timer functionality. 
      */
-    PR6 = 249;           // Timer period is 250
-    TMR6 = 0;            // Reset timer
-    PIE5bits.TMR6IE = 1; // Enable timer 6 interrupts.
-    T6CON = 0b01110111;  // Post scale: 15, pre scale: 16, timer on
+    PR6 = TICK_TIMER_PERIOD - 1; // Timer period is 250
+    TMR6 = 0;                    // Reset timer
+    PIE5bits.TMR6IE = 1;         // Enable timer 6 interrupts.
+    T6CON = 0b01110111;          // Post scale: 15, pre scale: 16, timer on
     
     
     /**
