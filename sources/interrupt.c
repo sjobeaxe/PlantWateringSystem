@@ -10,13 +10,13 @@
 #include <xc.h>
 #include "tickTimer.h"
 
-void interrupt interruptRoutine(void)
+void interrupt InterruptRoutine(void)
 {
   /** Tick timer interrupt */
   if (PIR5bits.TMR6IF)
   {
     PIR5bits.TMR6IF = 0;
-    tickTimerTick();
+    TickTimerTick();
   }
   
   return;

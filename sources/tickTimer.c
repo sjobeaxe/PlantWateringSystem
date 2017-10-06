@@ -14,13 +14,13 @@
  * \def volatile TICK_TIMER_DT timers[T_MAX_TIMERS];
  * \brief The timer structures.
  */
-volatile TICK_TIMER_DT timers[T_MAX_TIMERS];
+static volatile TICK_TIMER_DT timers[T_MAX_TIMERS];
 
 /**
  * \fn void tickTimerInit(void)
  * \brief Resets all timers to zero.
  */
-void tickTimerInit(void)
+void TickTimerInit(void)
 {
   unsigned char i;
   for (i = 0; i < T_MAX_TIMERS; i++)
@@ -36,7 +36,7 @@ void tickTimerInit(void)
  */
 #if !TICK_TIMER_USE_MACRO_TICK
 
-void inline tickTimerTick(void)
+void inline TickTimerTick(void)
 {
   unsigned char i;
   for (i = 0; i < T_MAX_TIMERS; i++)
@@ -53,7 +53,7 @@ void inline tickTimerTick(void)
  * \param timer Timer id.
  * \param Ticks to count down from.
  */
-void tickTimerSet(TICK_TIMER_ID timer, TICK_TIMER_DT ticks)
+void TickTimerSet(TICK_TIMER_ID timer, TICK_TIMER_DT ticks)
 {
   timers[timer] = ticks;
   return;
@@ -65,7 +65,7 @@ void tickTimerSet(TICK_TIMER_ID timer, TICK_TIMER_DT ticks)
  * \param timer Timer id to get.
  * \return Ticks left to zero.
  */
-TICK_TIMER_DT tickTimerGet(TICK_TIMER_ID timer)
+TICK_TIMER_DT TickTimerGet(TICK_TIMER_ID timer)
 {
   return timers[timer];
 }

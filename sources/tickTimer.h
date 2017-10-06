@@ -55,6 +55,10 @@ typedef enum
  */
 #define TICK_TIMER_HW_TIMER_PERIOD (TICK_TIMER_DT_MAX - TICK_TIMER_PERIOD)
 
+/**
+ * \def TICK_TIMER_USE_MACRO_TICK
+ * \brief Choose between macro or function for the main tick function.
+ */
 #define TICK_TIMER_USE_MACRO_TICK 0
 
 #if TICK_TIMER_USE_MACRO_TICK
@@ -69,16 +73,16 @@ extern volatile TICK_TIMER_DT timers[T_MAX_TIMERS];
 #endif
 
 //Initialize timers
-void tickTimerInit(void);
+void TickTimerInit(void);
 
 #if !TICK_TIMER_USE_MACRO_TICK
 //Count timers one down
-void inline tickTimerTick(void);
+void inline TickTimerTick(void);
 #endif
 
 //Sets value to timer
-void tickTimerSet(TICK_TIMER_ID timer, TICK_TIMER_DT ticks);
+void TickTimerSet(TICK_TIMER_ID timer, TICK_TIMER_DT ticks);
 //Reads values form 
-TICK_TIMER_DT tickTimerGet(TICK_TIMER_ID timer);
+TICK_TIMER_DT TickTimerGet(TICK_TIMER_ID timer);
 
 #endif  //_TICK_TIMER_H_

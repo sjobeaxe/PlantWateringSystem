@@ -16,7 +16,7 @@ void main(void)
 {
     uint8_t counter = 0;
     HardwareInitialize();
-	tickTimerInit();
+    TickTimerInit();
     
     /**
      * Start of the infinite super-loop.
@@ -24,18 +24,15 @@ void main(void)
      */
     while(1)
     {
-	  if (0 == tickTimerGet(T_PERIODIC_1S))
+      if (0 == TickTimerGet(T_PERIODIC_1S))
       {
-        tickTimerSet(T_PERIODIC_1S, tickMs(1000));
+        TickTimerSet(T_PERIODIC_1S, tickMs(1000));
       
         LED_PIN = !LED_PIN;
         LCD_BACKLIGHT_PIN = !LCD_BACKLIGHT_PIN;
         
         printf("TickTock: %i\n\r", counter++);
-	   
-	  }
-	  
-	 
+      }
     }
 	
     return;
