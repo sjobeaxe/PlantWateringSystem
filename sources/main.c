@@ -136,7 +136,7 @@ void HardwareInitialize(void)
     T1GCON = 0x00;      // No gate control.
     TMR1H = 0x80;       // Write MSB to cause a roll-over in 1 second (32768 Hz).
     TMR1L = 0x00;
-    //PIE1bits.TMR1IE = 1; // Enable TMR1 interrupt.
+    PIE1bits.TMR1IE = 1; // Enable TMR1 interrupt.
     T1CONbits.TMR1ON = 1; // Start timer
     
     /**
