@@ -10,6 +10,7 @@
 #include "ConfigurationBits.h"
 #include "HardwareDefinitions.h"
 #include "tickTimer.h"
+#include "RtcSwTimer.h"
 #include <stdio.h>
 
 void main(void)
@@ -17,6 +18,7 @@ void main(void)
     uint8_t counter = 0;
     HardwareInitialize();
     TickTimerInit();
+    RtcInit();
     
     /**
      * Start of the infinite super-loop.
@@ -29,9 +31,9 @@ void main(void)
         TickTimerSet(T_PERIODIC_1S, tickMs(1000));
       
         LED_PIN = !LED_PIN;
-        LCD_BACKLIGHT_PIN = !LCD_BACKLIGHT_PIN;
+        LCD_BACKLIGHT_PIN = !LED_PIN;
         
-        printf("TickTock: %i\n\r", counter++);
+        printf("%02i:%02i:%02i\n\r", RtcTime.hour, RtcTime.min, RtcTime.sec);
       }
     }
 	

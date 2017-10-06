@@ -9,6 +9,7 @@
 
 #include <xc.h>
 #include "tickTimer.h"
+#include "RtcSwTimer.h"
 
 void interrupt InterruptRoutine(void)
 {
@@ -32,8 +33,7 @@ void interrupt InterruptRoutine(void)
      */
     TMR1H |= 0x80; // Interrupt every second
     
-    // TODO: Add this function.
-    //RtcTick();
+    RtcTick();
   }
   
   return;

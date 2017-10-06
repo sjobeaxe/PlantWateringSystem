@@ -9,6 +9,7 @@
       <itemPath>ConfigurationBits.h</itemPath>
       <itemPath>HardwareDefinitions.h</itemPath>
       <itemPath>tickTimer.h</itemPath>
+      <itemPath>RtcSwTimer.h</itemPath>
     </logicalFolder>
     <logicalFolder name="LinkerScript"
                    displayName="Linker Files"
@@ -20,6 +21,7 @@
       <itemPath>main.c</itemPath>
       <itemPath>interrupt.c</itemPath>
       <itemPath>tickTimer.c</itemPath>
+      <itemPath>RtcSwTimer.c</itemPath>
     </logicalFolder>
     <logicalFolder name="ExternalFiles"
                    displayName="Important Files"
