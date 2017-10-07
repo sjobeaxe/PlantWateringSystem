@@ -11,6 +11,7 @@
       <itemPath>RtcSwTimer.h</itemPath>
       <itemPath>I2CDriver.h</itemPath>
       <itemPath>LcdDriver.h</itemPath>
+      <itemPath>TickTimer.h</itemPath>
     </logicalFolder>
     <logicalFolder name="LinkerScript"
                    displayName="Linker Files"
@@ -20,10 +21,11 @@
                    displayName="Source Files"
                    projectFiles="true">
       <itemPath>main.c</itemPath>
-      <itemPath>interrupt.c</itemPath>
       <itemPath>RtcSwTimer.c</itemPath>
       <itemPath>I2CDriver.c</itemPath>
       <itemPath>LcdDriver.c</itemPath>
+      <itemPath>TickTimer.c</itemPath>
+      <itemPath>InterruptHandlers.c</itemPath>
     </logicalFolder>
     <logicalFolder name="ExternalFiles"
                    displayName="Important Files"

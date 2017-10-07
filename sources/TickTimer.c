@@ -8,7 +8,7 @@
  *  Source file for Tick Timer.
  */
 
-#include "tickTimer.h"
+#include "TickTimer.h"
 
 /**
  * \def volatile TICK_TIMER_DT timers[T_MAX_TIMERS];
