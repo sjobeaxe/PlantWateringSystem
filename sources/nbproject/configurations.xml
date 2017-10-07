@@ -8,7 +8,6 @@
       <itemPath>main.h</itemPath>
       <itemPath>ConfigurationBits.h</itemPath>
       <itemPath>HardwareDefinitions.h</itemPath>
-      <itemPath>tickTimer.h</itemPath>
       <itemPath>RtcSwTimer.h</itemPath>
       <itemPath>I2CDriver.h</itemPath>
       <itemPath>LcdDriver.h</itemPath>
@@ -22,7 +21,6 @@
                    projectFiles="true">
       <itemPath>main.c</itemPath>
       <itemPath>interrupt.c</itemPath>
-      <itemPath>tickTimer.c</itemPath>
       <itemPath>RtcSwTimer.c</itemPath>
       <itemPath>I2CDriver.c</itemPath>
       <itemPath>LcdDriver.c</itemPath>
