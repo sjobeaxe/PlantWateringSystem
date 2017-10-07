@@ -9,16 +9,32 @@
 #include "main.h"
 #include "ConfigurationBits.h"
 #include "HardwareDefinitions.h"
-#include "tickTimer.h"
+#include "TickTimer.h"
 #include "RtcSwTimer.h"
+#include "LcdDriver.h"
 #include <stdio.h>
 
 void main(void)
 {
-    uint8_t counter = 0;
+    uint8_t buff20[20]; // LCD buffer
     HardwareInitialize();
     TickTimerInit();
     RtcInit();
+    
+    /**
+     * LCD seems to need a delay before it can be initialized.
+     * Testing on a LCD it seemed 10 ms was enough, double that 
+     * for good measure. Also after init, LCD seems to needs a 
+     * short delay too.
+     */
+    BlockingDelay(20);
+    LcdInit();
+    
+    /** LCD needs a while after init. */
+    BlockingDelay(1);
+    LcdWrite("PlantWateringSys"); // Splash-screen!
+    
+    LCD_BACKLIGHT_PIN = 1;
     
     /**
      * Start of the infinite super-loop.
@@ -31,9 +47,11 @@ void main(void)
         TickTimerSet(T_PERIODIC_1S, tickMs(1000));
       
         LED_PIN = !LED_PIN;
-        LCD_BACKLIGHT_PIN = !LED_PIN;
         
-        printf("%02i:%02i:%02i\n\r", RtcTime.hour, RtcTime.min, RtcTime.sec);
+        /** Update clock - Just for debug */
+        LcdGoto(LCD_LINE2);
+        sprintf(buff20,"%02i:%02i:%02i", RtcTime.hour, RtcTime.min, RtcTime.sec);
+        LcdWrite(buff20);
       }
     }
 	
@@ -150,6 +168,15 @@ void HardwareInitialize(void)
     PIE5bits.TMR6IE = 1;         // Enable timer 6 interrupts.
     T6CON = 0b01110111;          // Post scale: 15, pre scale: 16, timer on
     
+    /**
+     * Configure MSSP2 module.
+     * Configured to I2C master mode.
+     */
+    SSP2STAT = 0x80;
+    SSP2ADD = 39; //39 = 100khz @ 16Mhz, (Period = (ADD<7:0>+1*4)/Fosc)
+    SSP2CON1 = 0b00101000;
+    SSP2CON2 = 0;
+    SSP2CON3 = 0;
     
     /**
      * Enable interrupts.

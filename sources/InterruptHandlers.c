@@ -8,7 +8,7 @@
  */
 
 #include <xc.h>
-#include "tickTimer.h"
+#include "TickTimer.h"
 #include "RtcSwTimer.h"
 
 void interrupt InterruptRoutine(void)
