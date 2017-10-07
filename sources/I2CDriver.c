@@ -13,8 +13,6 @@
 #include <xc.h>
 #include "I2CDriver.h"
 
-#include "main.h"
-
 /**
  * \fn void I2CWait(void)
  * \brief Waits for a started operation on the I2C to finish.
