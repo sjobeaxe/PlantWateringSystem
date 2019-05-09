@@ -22,7 +22,7 @@
 #define LCD_I2C_ADDRESS 0x3E
 
 void LcdInit(void);
-void LcdWrite(const char *str);
+void LcdWrite(char *str);
 void LcdGoto(uint8_t pos);
 
 #endif	/* LCD_I2C_H */

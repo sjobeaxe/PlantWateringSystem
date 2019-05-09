@@ -22,7 +22,7 @@
  * This project uses the internal oscillator of the MCU.
  * See HardwareInitialize(). Configured to 16 Mhz
  */
-#define HW_OSC_FREQ 16000000UL
+#define HW_OSC_FREQ 8000000UL
 
 /**
  * \def HW_OSC_PLL_MULT
@@ -66,5 +66,49 @@
  */
 #define USB_UART_BAUD 57600UL
 #define UART1_BRG16BHS (( (HW_CLOCK_FREQ) / (4UL * USB_UART_BAUD) ) -1)
+
+/**
+ * \def BUTTON_UP
+ * \brief User-interface button.
+ */
+#define BUTTON_UP !PORTBbits.RB3
+
+/**
+ * \def BUTTON_MIDDLE
+ * \brief User-interface button.
+ */
+#define BUTTON_MIDDLE !PORTBbits.RB4
+
+/**
+ * \def BUTTON_DOWN
+ * \brief User-interface button.
+ */
+#define BUTTON_DOWN !PORTBbits.RB5
+
+/**
+ * \def ADC_CHANNEL_TEMP
+ * \brief ADC channel for temperature sensor
+ */
+#define ADC_CHANNEL_TEMP 3
+
+/**
+ * \def ADC_CHANNEL_INPUT
+ * \brief ADC channel for input/charger voltage
+ */
+#define ADC_CHANNEL_INPUT 16
+
+/**
+ * \def ADC_CHANNEL_BATTERY
+ * \brief ADC channel for battery voltage
+ */
+#define ADC_CHANNEL_BATTERY 2
+
+/**
+ * \def ADC_CHANNEL_WATER_SENSOR
+ * \brief ADC channel for battery voltage
+ */
+#define ADC_CHANNEL_WATER_SENSOR 12
+
+
 
 #endif	/* HARDWARE_DEFINITIONS_H */

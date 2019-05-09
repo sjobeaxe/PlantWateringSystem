@@ -16,10 +16,15 @@
  */
 typedef enum
 {
-  T_MISC = 0,
   T_PERIODIC_1S,
   T_PERIODIC_100MS,
-  T_PERIODIC_10MS,
+  T_UI_TIMEOUT,
+  T_LCD,
+  T_BUTTON_MIDDLE,
+  T_BUTTON_UP,
+  T_BUTTON_UP_LP,
+  T_BUTTON_DOWN,
+  T_BUTTON_DOWN_LP,
   T_MAX_TIMERS  // Do not remove this
 } TICK_TIMER_ID;
 
@@ -36,9 +41,9 @@ typedef enum
 
 // Convert milliseconds to ticks.
 // Max tick delay depends on data type and timer tick interval
-// MAX_DELAY = TICK_TIMER_DT_MAX / TICK_FOSC 
+// MAX_DELAY = TICK_TIMER_DT_MAX / TICK_TIMER_FOSC 
 #define TICK_TIMER_PERIOD (250UL) // Adjust this for wanted tick time
-#define TICK_TIMER_PS     (15UL * 16UL) // Configured in TMR6 HW init
+#define TICK_TIMER_PS     (5UL * 16UL) // Configured in TMR6 HW init
 #define TICK_TIMER_FOSC   (HW_CLOCK_FREQ / (TICK_TIMER_PERIOD * TICK_TIMER_PS * 4UL))
 
 // Converts milliseconds to ticks. Divide by 1000 because of ms.

@@ -46,7 +46,7 @@ void LcdInit(void)
  * \brief Prints string on the current location on the LCD.
  * \param str Pointer to null-terminated string to be printed.
  */
-void LcdWrite(const char *str)
+void LcdWrite(char *str)
 {
   I2CStart();
   I2CWrite(LCD_I2C_ADDRESS << 1);
