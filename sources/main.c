@@ -12,30 +12,22 @@
 #include "TickTimer.h"
 #include "RtcSwTimer.h"
 #include "LcdDriver.h"
+#include "GlobalVariables.h"
+#include "LocalUserInterface.h"
 #include <stdio.h>
 
 adcResult BatteryVoltage; 
 adcResult InputVoltage;
 adcResult Temperature;
 
+ // Waterer state
+watererStates watererState = WAITING;
+
+// Device statsu
+DeviceStatus_st MainStatus;
+
 void main(void)
 {
-  uint32_t wateringPeriod;
-  int16_t pumpOntime;
-  uint8_t pumpPWM;
-  
-  char LCDBuf[20]; // LCD buffer
-  
-  // UI state
-  uint8_t displayMode;
-  
-  // Waterer state
-  watererStates watererState = WAITING;
-  
-  // Temporary variables
-  uint32_t ul;
-  uint16_t ui;
-  
   HardwareInitialize();
   TickTimerInit();
   RtcInit();
@@ -55,12 +47,14 @@ void main(void)
 
   LCD_BACKLIGHT_PIN = 0;
   LED_PIN = 0;
-  
+  CHARGER_PIN = 0;
   
   
   /**
    * Restore settings.
    */
+  
+  
   pumpPWM = intEEread(0);
   pumpOntime = ((uint16_t) intEEread(1) << 8);
   pumpOntime |= (uint16_t) intEEread(2);
@@ -68,291 +62,80 @@ void main(void)
   wateringPeriod |= ((uint32_t) intEEread(4) << 16);
   wateringPeriod |= ((uint32_t) intEEread(5) << 8);
   wateringPeriod |= ((uint32_t) intEEread(6));
-
   
   printf("WOO!!!\n\r");
-  printf("%i\n\r", TICK_TIMER_DT_MAX / TICK_TIMER_FOSC );
-  printf("%i\n\r", tickMs(LONGPRESS_TIMEOUT) );
-  printf("%i\n\r", T_MAX_TIMERS );
-  
-  
+
   /**
    * Start of the infinite super-loop.
    * This is the "operating system" of this project
    */
   while (1)
   {
+    /**
+     * Period task: 1s.
+     */
     if (0 == TickTimerGet(T_PERIODIC_1S))
     {
       TickTimerSet(T_PERIODIC_1S, tickMs(1000));
       
       printf("%02i:%02i:%02i\n\r", RtcTime.hour, RtcTime.min, RtcTime.sec);
+      printf("Status %x\n\r", MainStatus);
+      printf("\n");
       
       printf("InputRaw %i\n\r", InputVoltage.raw);
       printf("InputFilt %i\n\r", InputVoltage.filtered);
       printf("InputScaled %i\n\r", InputVoltage.scaled);
-      
+      printf("\n");
       
       printf("BatteryRaw %i\n\r", BatteryVoltage.raw);
       printf("BatteryFilt %i\n\r", BatteryVoltage.filtered);
       printf("BatteryScaled %i\n\r", BatteryVoltage.scaled);
-      
+      printf("\n");
       
       printf("Temp %i\n\r", Temperature.raw);
       printf("TempFilt %i\n\r", Temperature.filtered);
       printf("TempScaled %i\n\r", Temperature.scaled);
-      
+      printf("\n");
       
       LED_PIN = !LED_PIN;
+      
+      ChargerTask();
     }
     
     /**
-     * Handle ADC tasks
+     * Period task: 100ms.
      */
-    
     if (0 == TickTimerGet(T_PERIODIC_100MS))
     {
       TickTimerSet(T_PERIODIC_100MS, tickMs(100));
       
       ADCTasks();
-      
-          
     }
     
-    //  ==============================
-    //  Manage UI
-    //  ==============================
-    if(BUTTON_MIDDLE)
-    {
-      if(!TickTimerGet(T_BUTTON_MIDDLE))
-      {
-        displayMode++;
-        
-        TickTimerSet(T_LCD, 0);
-        TickTimerSet(T_UI_TIMEOUT, tickMs(MENU_TIMEOUT));
-      }
-      TickTimerSet(T_BUTTON_MIDDLE, tickMs(100));
-    }
-
-    
-    if(BUTTON_UP)
-    {
-      if(!TickTimerGet(T_BUTTON_UP) || !TickTimerGet(T_BUTTON_UP_LP))
-      {
-        switch(displayMode)
-        {
-          case 0:
-            //TickTimerSetL(T_PERIOD, 0); //Start pumping
-            break;
-          case 1:
-            wateringPeriod += WATERING_PERIOD_INCREMENTS;
-            if(wateringPeriod > WATERING_PERIOD_MAX)
-            {
-              wateringPeriod = WATERING_PERIOD_MAX;
-            }
-            break;
-          case 2:
-            pumpOntime += PUMP_ONTIME_INCREMETNS;
-            if(pumpOntime > PUMP_ONTIME_MAX)
-            {
-              pumpOntime = PUMP_ONTIME_MAX;
-            }
-            break;
-          case 3:
-            pumpPWM++;
-            if(pumpPWM > PUMP_PWM_MAX)
-            {
-              pumpPWM = PUMP_PWM_MAX;
-            }
-            break;
-        }
-        
-        TickTimerSet(T_LCD, 0);
-        TickTimerSet(T_UI_TIMEOUT, tickMs(MENU_TIMEOUT));
-      }
-      TickTimerSet(T_BUTTON_UP, tickMs(60));
-      
-      if(!TickTimerGet(T_BUTTON_UP_LP)) //was it a long press?
-      {
-        TickTimerSet(T_BUTTON_UP_LP, tickMs(50));
-      }
-    }
-    else
-    {
-      TickTimerSet(T_BUTTON_UP_LP, tickMs(LONGPRESS_TIMEOUT));
-    }
-    
-    
-    if(BUTTON_DOWN)
-    {
-      if( !TickTimerGet(T_BUTTON_DOWN) || !TickTimerGet(T_BUTTON_DOWN_LP))
-      {
-        switch(displayMode)
-        {
-          case 0:
-            //TickTimerSetL(T_WATER, 0); //Stop pumping
-            break;
-            
-          case 1:
-            wateringPeriod -= WATERING_PERIOD_INCREMENTS;
-            if(wateringPeriod < WATERING_PERIOD_MIN)
-            {
-              wateringPeriod = WATERING_PERIOD_MIN;
-            }
-            //if(TickTimerGet(T_PERIOD) > wateringPeriod) //if new period is shorter reset period
-            //{
-            //  TickTimerSet(T_PERIOD, wateringPeriod);
-            //}
-            break;
-            
-          case 2:
-            pumpOntime -= PUMP_ONTIME_INCREMETNS;
-            if(pumpOntime < PUMP_ONTIME_MIN)
-            {
-              pumpOntime = PUMP_ONTIME_MIN;
-            }
-            break;
-            
-          case 3:
-            pumpPWM--;
-            if(pumpPWM < PUMP_PWM_MIN)
-            {
-              pumpPWM = PUMP_PWM_MIN;
-            }
-            break;
-        }
-        
-        TickTimerSet(T_LCD, 0);
-        TickTimerSet(T_UI_TIMEOUT, tickMs(MENU_TIMEOUT));
-      }
-      TickTimerSet(T_BUTTON_DOWN, tickMs(60));
-      
-      if(!TickTimerGet(T_BUTTON_DOWN_LP)) //was it a long press?
-      {
-        TickTimerSet(T_BUTTON_DOWN_LP, tickMs(50));
-      }
-    }
-    else 
-    {
-      TickTimerSet(T_BUTTON_DOWN_LP, tickMs(LONGPRESS_TIMEOUT));
-    }
-
-
     /**
-     * UPDATE LCD
+     * Period task: 10ms.
      */
-    
+    if (0 == TickTimerGet(T_PERIODIC_10MS))
+    {
+      TickTimerSet(T_PERIODIC_10MS, tickMs(10));
+      
+      LocalUserInterfaceTask();
+    }
+ 
+    /**
+     * LCD task.
+     */
     if(!TickTimerGet(T_LCD))
     {
       TickTimerSet(T_LCD, tickMs(300));
       
-      if(!TickTimerGet(T_UI_TIMEOUT)) //return to base display if buttons not touched for a while
-      {
-        displayMode = 0;
-      }
-
-      switch(displayMode)
-      {
-        default:
-          displayMode = 0;
-          
-        case 0:
-          switch(watererState)
-          {
-            default:
-              //ui = (bat_avg >> (BAT_N_AVG - 1));
-              //sprintf(LCDBuf, "N:%2lih%02lim B%2i.%02iV", TickTimerGetL(T_PERIOD) / 3600, (TickTimerGetL(T_PERIOD) % 3600) / 60, ui / 100, ui % 100);
-              sprintf(LCDBuf, "In menu 0, waiting");
-              break;
-
-            case WATERING:
-              //if(water_low)
-              //  sprintf(LCDBuf, "L:%2lim%02lis LoWater ", TickTimerGetL(T_WATER) / 60, tickTimerGetL(T_WATER) % 60);
-              //else
-              //  sprintf(LCDBuf, "L:%2lim%02lis C%i.%02iA ", TickTimerGetL(T_WATER) / 60, TickTimerGetL(T_WATER) % 60, ui / 100, ui % 100);
-              sprintf(LCDBuf, "Menu 0; watering");
-              break;
-
-            case LOWBAT:
-              //ui = (bat_avg >> (BAT_N_AVG - 1));
-              //ui2 = (pan_avg >> (PAN_N_AVG - 1));
-              //sprintf(LCDBuf, "LoB P%2i.%iVB%2i.%iV", ui2 / 100, (ui2 % 100) / 10, ui / 100, (ui % 100) / 10);
-              sprintf(LCDBuf, "Menu 0; lowbat");
-              break;
-          }
-          break;
-          
-        case 1:
-          ul = wateringPeriod / 60;
-          ui = (int) (ul / ((int) 24 * 60));
-          ul %= ((int) 24 * 60);
-          sprintf(LCDBuf, "Period: %id%02lih%02lim  ", ui, ul / 60, ul % 60);
-          break;
-          
-        case 2:
-          if(pumpOntime == 0)
-          {
-            sprintf(LCDBuf, "Pump off!           ");
-          }
-          else
-          {
-            sprintf(LCDBuf, "On time: %im%02is   ", pumpOntime / 60, pumpOntime % 60);
-          }
-          break;
-          
-        case 3:
-          sprintf(LCDBuf, "Pump power: %3i%%", pumpPWM);
-          break;
-          
-        case 4:
-          /*
-          ui = (pan_avg >> (PAN_N_AVG - 1));
-          if(CHARGE)
-            sprintf(LCDBuf, "P:%2i.%02iV Chrging  ", ui / 100, ui % 100);
-          else
-          {
-            if(pan_avg > bat_avg)
-              sprintf(LCDBuf, "P:%2i.%02iV BatFull  ", ui / 100, ui % 100);
-            else
-              sprintf(LCDBuf, "P:%2i.%02iV No Sun   ", ui / 100, ui % 100);
-          }
-          */
-          sprintf(LCDBuf, "Chrg dispplay   ");
-          break;
-          
-        case 5:
-          sprintf(LCDBuf, "Settings saved! ");
-          /*
-          intEEwrite(pumpPWM, 0);
-          intEEwrite(pumpOntime >> 8, 1);
-          intEEwrite(pumpOntime, 2);
-          intEEwrite((wateringPeriod >> 24) & 0xFF, 3);
-          intEEwrite((wateringPeriod >> 16) & 0xFF, 4);
-          intEEwrite((wateringPeriod >> 8) & 0xFF, 5);
-          intEEwrite((wateringPeriod) & 0xFF, 6);
-*/
-          TickTimerSet(T_LCD, tickMs(1000));
-          displayMode = 0;
-          break;
-          
-      }
-
-      //write buffer to lcd
-      LcdGoto(LCD_LINE1);
-      LcdWrite(LCDBuf);
-      
-      // Show a clock
-      LcdGoto(LCD_LINE2);
-      sprintf(LCDBuf, "%02i:%02i:%02i", RtcTime.hour, RtcTime.min, RtcTime.sec);
-      LcdWrite(LCDBuf);
+      LCDUpdateTask();
     }
-    //DONE!
+   
+    SLEEP();
     
-    
-    //SLEEP();
-    
-  } // while(1))
-
+  } // while(1)
+  
   return;
 }
 
@@ -495,20 +278,19 @@ void HardwareInitialize(void)
   return;
 }
 
-
-
-
 /**
  * Blocking read of ADC.
  */
 uint16_t readAnalog(uint8_t channel)
 {
-   ADCON0bits.CHS = channel;
+  // Select channel
+  ADCON0bits.CHS = channel;
  
-  BlockingDelay(1);
+  // Do conversion...
   ADCON0bits.GO = 1; //start convert
   while(ADCON0bits.GO); //wait for completion
 
+  // Return result.
   return (uint16_t) ADRESH << 8 | ADRESL;
 }
 
@@ -561,4 +343,51 @@ void ADCTasks(void)
   Temperature.raw = readAnalog(ADC_CHANNEL_TEMP);
   Temperature.filtered += Temperature.raw - (Temperature.filtered >> 3);
   Temperature.scaled = (((Temperature.filtered - 655)) << 4) / 51; // Offset by 0.4V then scale by 0.313
+}
+
+
+//Constants
+#define END_VOLT    1370 //"centivolts"
+#define START_VOLT  1340
+#define OK_VOLT     1130 //when watering can start again
+#define LOW_VOLT    1080 //when to stop watering
+
+void ChargerTask(void)
+{
+  // Handle charging itself.
+  if( InputVoltage.scaled > BatteryVoltage.scaled )
+  {
+    if( BatteryVoltage.scaled >= END_VOLT )
+    {
+      MainStatus.Charging = 0;
+    }
+    
+    if( BatteryVoltage.scaled < START_VOLT)
+    {
+      MainStatus.Charging = 1;
+    }
+  }
+  else
+  {
+    MainStatus.Charging = 0;
+  }
+  
+  // Set the pin
+  CHARGER_PIN = MainStatus.Charging;
+  
+  // Check for low battery, based on voltage only.
+  if( BatteryVoltage.scaled < LOW_VOLT)
+  {
+    MainStatus.LowBat = 1;
+  }
+  
+  if(MainStatus.LowBat)
+  {
+    if( BatteryVoltage.scaled > OK_VOLT)
+    {
+      MainStatus.LowBat = 0;
+    }
+  }
+  
+  return;
 }

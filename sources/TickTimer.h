@@ -18,14 +18,10 @@ typedef enum
 {
   T_PERIODIC_1S,
   T_PERIODIC_100MS,
+  T_PERIODIC_10MS,
   T_UI_TIMEOUT,
   T_LCD,
-  T_BUTTON_MIDDLE,
-  T_BUTTON_UP,
-  T_BUTTON_UP_LP,
-  T_BUTTON_DOWN,
-  T_BUTTON_DOWN_LP,
-  T_MAX_TIMERS  // Do not remove this
+  T_MAX_TIMERS  // Do not remove T_MAX_TIMERS
 } TICK_TIMER_ID;
 
 // Datatype to use for timer, (8 or 16)

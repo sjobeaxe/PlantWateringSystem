@@ -51,28 +51,25 @@ typedef enum
     LOWBAT
 } watererStates;
 
+typedef struct Status_t
+{
+  uint8_t Charging      : 1;
+  uint8_t LowBat        : 1;
+  uint8_t PumpOn        : 1;
+  uint8_t RelayActive   : 1;
+  
+  uint8_t LowWater      : 1;
+  uint8_t unused0       : 1;
+  uint8_t unused1       : 1;
+  uint8_t unused2       : 1;
+}DeviceStatus_st;
+
 typedef struct
 {
     uint16_t raw;
     uint16_t filtered;
     uint16_t scaled;
 } adcResult;
-
-
-// UI constants
-#define LONGPRESS_TIMEOUT 1500  //in ms
-#define MENU_TIMEOUT 45000  //in ms
-
-#define WATERING_PERIOD_MAX ((uint32_t)4*24*60*60)
-#define WATERING_PERIOD_MIN ((uint32_t)15*60)
-#define WATERING_PERIOD_INCREMENTS (uint16_t)15*60
-
-#define PUMP_ONTIME_MAX ((int16_t)60*60)
-#define PUMP_ONTIME_MIN ((int16_t)0)
-#define PUMP_ONTIME_INCREMETNS 15
-
-#define PUMP_PWM_MAX 100
-#define PUMP_PWM_MIN 15
 
 void putch(char data);
 void BlockingDelay(uint16_t delay);
@@ -83,5 +80,6 @@ void intEEwrite(uint8_t data, uint8_t adr);
 void setPWM(uint16_t pwm);
 uint16_t readAnalog(uint8_t channel);
 void ADCTasks(void);
+void ChargerTask(void);
 
 #endif	/* MAIN_H */
